@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ForegroundServiceApp</string>
+    <string name="song_name">SongName</string>
+</resources>
