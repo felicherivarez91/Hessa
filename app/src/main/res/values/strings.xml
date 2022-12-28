@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">ForegroundServiceApp</string>
     <string name="song_name">SongName</string>
+    <string name="title">Audio is Playing</string>
+    <string name="Content">"Audio Name: "</string>
+    <string name="stop_audio">Stop Audio</string>
 </resources>
