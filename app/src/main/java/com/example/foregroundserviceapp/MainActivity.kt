@@ -34,9 +34,8 @@ class MainActivity : AppCompatActivity() {
         displaySongView(currentSongPosition)
 
         // prepare gui
-        if(isServiceAlive(serviceClass)){
-            binding.ivPlayPause
-        }
+        prepareGui()
+
         binding.ivPlayPause.setOnClickListener {
             if (isServiceAlive(serviceClass)) {
                 stopService()
@@ -69,7 +68,6 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun startService() {
-
         binding.ivPlayPause.setImageResource(R.drawable.ic_pause)
         serviceIntent = Intent(this, MyService::class.java)
        // serviceIntent.putExtra("AudioON", "Audio is playing")
@@ -80,6 +78,7 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService( serviceIntent!!)
             Toast.makeText(this,"service is ${isServiceAlive(serviceClass)}",Toast.LENGTH_SHORT).show()
+
         }
 
     }
@@ -110,10 +109,23 @@ class MainActivity : AppCompatActivity() {
         return false
     }
 
+    override fun onStart() {
+        super.onStart()
+        prepareGui()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
 
     }
 
-    //fix the giu
+    fun prepareGui(){
+        // prepare gui
+        if(isServiceAlive(serviceClass)){
+            binding.ivPlayPause.setImageResource(R.drawable.ic_pause)
+        }else{
+            binding.ivPlayPause.setImageResource(R.drawable.ic_play)
+
+        }
+    }
 }

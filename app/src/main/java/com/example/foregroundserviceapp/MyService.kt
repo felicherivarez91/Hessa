@@ -10,7 +10,6 @@ import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.widget.RemoteViews
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 
 
@@ -49,7 +48,6 @@ class MyService : Service() {
 
 
        val notificationLayout = RemoteViews(packageName, R.layout.notification_view)
-        Toast.makeText(this, "service is on", Toast.LENGTH_SHORT).show()
         //val input = intent.getStringExtra("AudioON")
          songResource = intent.getIntExtra("SongResource", 0)
          songName = intent.getStringExtra("SongName").toString()
@@ -81,7 +79,9 @@ class MyService : Service() {
 
         if (intent != null){
             when(intent.action){
-                ACTION_STOP.toString() ->{stopSound()}
+                ACTION_STOP.toString() ->{stopSound()
+                    stopService(Intent(this, MyService::class.java))
+                }
             }
         }
 
@@ -103,7 +103,6 @@ class MyService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Toast.makeText(this, "service is off", Toast.LENGTH_SHORT).show()
         stopSound()
     }
 
@@ -138,8 +137,8 @@ class MyService : Service() {
         mediaPlayer.release()
         mediaPlayer = MediaPlayer()
 
-        stopService(Intent(this, MyService::class.java))
-
+    //  stopService(Intent(this, MyService::class.java))
+    //stop the service only when we click on the stop button and dont stop the service
     }
 
 
