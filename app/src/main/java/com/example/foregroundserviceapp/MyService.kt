@@ -5,22 +5,26 @@ import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.Intent
 import android.media.MediaPlayer
 import android.media.session.PlaybackState.ACTION_STOP
+import android.net.Uri
+import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.widget.RemoteViews
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import com.example.foregroundserviceapp.databinding.ActivityMainBinding
+
 
 class MyService : Service() {
 
     private val CHANNEL_ID = "ForegroundServiceChannel"
     private lateinit var mediaPlayer: MediaPlayer
+     private var songResource :Int = 0
+     private var songName :String = ""
 
 
     override fun onCreate() {
         super.onCreate()
+        mediaPlayer = MediaPlayer()
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
@@ -28,13 +32,10 @@ class MyService : Service() {
         val stopIntent = Intent(this, MyService::class.java).apply {
             action = ACTION_STOP.toString()
         }
+
         val stopPendingIntent: PendingIntent = PendingIntent.getService(this, 0, stopIntent, FLAG_IMMUTABLE)
 
-        if (intent != null){
-            when(intent.action){
-                ACTION_STOP.toString() ->{stopSound()}
-            }
-        }
+
 
         // show a notification in the notification bar
         val notificationIntent = Intent(this, MainActivity::class.java)
@@ -50,12 +51,12 @@ class MyService : Service() {
        val notificationLayout = RemoteViews(packageName, R.layout.notification_view)
         Toast.makeText(this, "service is on", Toast.LENGTH_SHORT).show()
         //val input = intent.getStringExtra("AudioON")
-        val songResource = intent.getIntExtra("SongResource", 0)
-        val songName = intent.getStringExtra("SongName")
+         songResource = intent.getIntExtra("SongResource", 0)
+         songName = intent.getStringExtra("SongName").toString()
         notificationLayout.setTextViewText(R.id.tvContent,"Audio Name: $songName")
         notificationLayout.setOnClickPendingIntent(R.id.btnStop,stopPendingIntent)
-        mediaPlayer = MediaPlayer.create(this, songResource)
-        mediaPlayer.isLooping = true
+     //   mediaPlayer = MediaPlayer.create(this, songResource)
+       // mediaPlayer.isLooping = true
 //
         createNotificationChannel()
 //
@@ -78,18 +79,13 @@ class MyService : Service() {
 
         playSound()
 
-        // do heavy work on a background thread
-        //  val thread = Thread(
-        // Runnable {
-        //   mediaPlayer = MediaPlayer.create(this, songResource)
-        //   mediaPlayer.isLooping = false
-        //   mediaPlayer.start()
-        //      Thread.sleep(1000)
-        //   }
-        //  )
-        //  thread.start()
+        if (intent != null){
+            when(intent.action){
+                ACTION_STOP.toString() ->{stopSound()}
+            }
+        }
 
-        return START_NOT_STICKY
+        return START_REDELIVER_INTENT
     }
 
     private fun createNotificationChannel() {
@@ -118,8 +114,16 @@ class MyService : Service() {
 
     // media functions
     private fun playSound() {
-        // if (mediaPlayer == null) {
-        if (!mediaPlayer.isPlaying) {
+//         if (mediaPlayer == null) {
+//             mediaPlayer= MediaPlayer()
+//         }
+
+        if (/*mediaPlayer != null && */ !mediaPlayer.isPlaying) {
+            val resourceUri: Uri = Uri.parse("android.resource://$packageName/$songResource")
+            mediaPlayer.reset()
+            mediaPlayer.setDataSource(this,resourceUri)
+            mediaPlayer.prepare()
+            mediaPlayer.isLooping = true
             mediaPlayer.start()
         }
 
@@ -127,10 +131,19 @@ class MyService : Service() {
     }
 
     private fun stopSound() {
-        if (mediaPlayer.isPlaying) {
+
+        if (mediaPlayer.isPlaying()) {
             mediaPlayer.stop()
-            mediaPlayer!!.release()
         }
+        mediaPlayer.release()
+        mediaPlayer = MediaPlayer()
+
+        stopService(Intent(this, MyService::class.java))
+
     }
+
+
+
+
 }
 
