@@ -6,7 +6,6 @@ import android.content.Intent
 import android.media.MediaPlayer
 import android.media.session.PlaybackState.ACTION_STOP
 import android.net.Uri
-import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.widget.RemoteViews
@@ -107,6 +106,7 @@ class MyService : Service() {
     }
 
 
+
     override fun onBind(intent: Intent): IBinder? {
         return null
     }
@@ -129,6 +129,7 @@ class MyService : Service() {
         //  }
     }
 
+
     private fun stopSound() {
 
         if (mediaPlayer.isPlaying()) {
@@ -139,6 +140,7 @@ class MyService : Service() {
 
     //  stopService(Intent(this, MyService::class.java))
     //stop the service only when we click on the stop button and dont stop the service
+    // have the service running all the time
     }
 
 

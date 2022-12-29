@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
          serviceClass = MyService::class.java
-        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+         val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
          services = activityManager.getRunningServices(Int.MAX_VALUE)
 
 
@@ -86,6 +86,7 @@ class MainActivity : AppCompatActivity() {
     private fun stopService() {
         binding.ivPlayPause.setImageResource(R.drawable.ic_play)
          serviceIntent = Intent(this, MyService::class.java)
+
         stopService(serviceIntent)
         Toast.makeText(this,"service is ${isServiceAlive(serviceClass)}",Toast.LENGTH_SHORT).show()
 
